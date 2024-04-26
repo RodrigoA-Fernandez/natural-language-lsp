@@ -13,15 +13,22 @@ import (
 )
 
 func main() {
-	def, err := scrapper.Definir("ornitorrinco")
+	def, err := scrapper.Definir("manzana")
 	if err != nil {
+		fmt.Println(err)
 		return
 	}
 
 	fmt.Println(def.Palabra)
 	fmt.Println(def.Etimologia)
+
 	for _, acepcion := range def.Acepciones {
 		fmt.Println(acepcion)
+	}
+
+	for _, sec := range def.Definiciones_secundarias {
+		fmt.Println(sec.Palabra)
+		fmt.Println(sec.Acepciones[0])
 	}
 
 	// logger := getLogger("/home/rodrigo/Proyectos/natural_language_lsp/log.txt")
