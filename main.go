@@ -1,58 +1,42 @@
 package main
 
 import (
-	// "bufio"
+	"bufio"
 	"encoding/json"
-	"fmt"
+	"io"
+
+	// "fmt"
 	"log"
 	"natural_language_lsp/analisis"
 	"natural_language_lsp/lsp"
 	"natural_language_lsp/rpc"
-	"natural_language_lsp/scrapper"
 	"os"
 )
 
 func main() {
-	def, err := scrapper.Definir("manzana")
-	if err != nil {
-		fmt.Println(err)
-		return
+	logger := getLogger("/home/rodrigo/Proyectos/natural_language_lsp/log.txt")
+	logger.Println("Empecé y eso")
+
+	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Split(rpc.Split)
+
+	state := analisis.NewState()
+	writer := os.Stdout
+
+	for scanner.Scan() {
+		msg := scanner.Bytes()
+		method, contents, err := rpc.DecodeMessage(msg)
+		if err != nil {
+			logger.Printf("Error: %s", err)
+			continue
+		}
+
+		handleMessage(logger, writer, method, contents, state)
 	}
-
-	fmt.Println(def.Palabra)
-	fmt.Println(def.Etimologia)
-
-	for _, acepcion := range def.Acepciones {
-		fmt.Println(acepcion)
-	}
-
-	for _, sec := range def.Definiciones_secundarias {
-		fmt.Println(sec.Palabra)
-		fmt.Println(sec.Acepciones[0])
-	}
-
-	// logger := getLogger("/home/rodrigo/Proyectos/natural_language_lsp/log.txt")
-	// logger.Println("Empecé y eso")
-	//
-	// scanner := bufio.NewScanner(os.Stdin)
-	// scanner.Split(rpc.Split)
-	//
-	// state := analisis.NewState()
-	//
-	// for scanner.Scan() {
-	// 	msg := scanner.Bytes()
-	// 	method, contents, err := rpc.DecodeMessage(msg)
-	// 	if err != nil {
-	// 		logger.Printf("Error: %s", err)
-	// 		continue
-	// 	}
-	//
-	// 	handleMessage(logger, method, contents, state)
-	// }
 }
 
-func handleMessage(logger *log.Logger, method string, contents []byte, state analisis.State) {
-	// logger.Printf("Mensaje recibido con método: %s", method)
+func handleMessage(logger *log.Logger, writer io.Writer, method string, contents []byte, state analisis.State) {
+	logger.Printf("Mensaje recibido con método: %s", method)
 
 	switch method {
 	case "initialize":
@@ -67,11 +51,7 @@ func handleMessage(logger *log.Logger, method string, contents []byte, state ana
 			request.Params.ClientInfo.Version)
 
 		// Respuesta
-		msg := lsp.NewInitializeResponse(request.ID)
-		reply := rpc.EncodeMessage(msg)
-
-		writer := os.Stdout
-		writer.Write([]byte(reply))
+		writeResponse(writer, lsp.NewInitializeResponse(request.ID))
 
 		logger.Print("Respuesta enviada")
 		break
@@ -104,7 +84,25 @@ func handleMessage(logger *log.Logger, method string, contents []byte, state ana
 		}
 		break
 
+	case "textDocument/hover":
+		var request lsp.HoverRequest
+		if err := json.Unmarshal(contents, &request); err != nil {
+			logger.Printf("textDocument/hover: %s", err)
+			return
+		}
+
+		logger.Printf(string(contents))
+
+		response := state.Hover(request.ID, request.Params.TextDocument.URI, request.Params.Position)
+
+		writeResponse(writer, response)
+
 	}
+}
+
+func writeResponse(writer io.Writer, msg any) {
+	reply := rpc.EncodeMessage(msg)
+	writer.Write([]byte(reply))
 }
 
 func getLogger(filename string) *log.Logger {

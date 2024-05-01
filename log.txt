@@ -1,3 +1,5 @@
-[natural_language_lsp]2024/04/26 16:46:31 main.go:15: Empecé y eso
-[natural_language_lsp]2024/04/26 16:46:31 main.go:45: Connectado a: Neovim 0.9.5
-[natural_language_lsp]2024/04/26 16:46:31 main.go:56: Respuesta enviada
+[natural_language_lsp]2024/05/01 22:51:37 main.go:18: Empecé y eso
+[natural_language_lsp]2024/05/01 22:51:37 main.go:39: Mensaje recibido con método: initialize
+[natural_language_lsp]2024/05/01 22:51:37 main.go:49: Connectado a: Neovim 0.9.5
+[natural_language_lsp]2024/05/01 22:51:37 main.go:56: Respuesta enviada
+[natural_language_lsp]2024/05/01 22:51:37 main.go:39: Mensaje recibido con método: initialized

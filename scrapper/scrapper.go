@@ -2,7 +2,6 @@ package scrapper
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly"
@@ -67,7 +66,6 @@ func Definir(palabra string) (Definicion, error) {
 			})
 			definiciones = append(definiciones, cad)
 		})
-		fmt.Println(definiciones)
 
 		for i := 0; i < len(frases_hechas); i++ {
 			var defs []string
@@ -86,4 +84,19 @@ func Definir(palabra string) (Definicion, error) {
 	}
 
 	return def, err
+}
+
+func DefinicionMd(def Definicion) string {
+	texto := "# " + def.Palabra + "\n"
+	texto += "*" + def.Etimologia + "*\n\n"
+	for _, acepcion := range def.Acepciones {
+		texto += acepcion + "\n"
+	}
+	texto += "\n"
+
+	for _, sec := range def.Definiciones_secundarias {
+		texto += "## " + sec.Palabra + "\n"
+		texto += sec.Acepciones[0] + "\n\n"
+	}
+	return texto
 }
