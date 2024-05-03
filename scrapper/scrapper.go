@@ -2,22 +2,22 @@ package scrapper
 
 import (
 	"errors"
+	"html"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly"
 )
 
 type Definicion struct {
-	Palabra                  string
-	Etimologia               string
-	Acepciones               []string
+	Palabra                  []string
+	Etimologia               []string
+	Acepciones               [][]string
 	Definiciones_secundarias []Definicion
 }
 
 func Definir(palabra string) (Definicion, error) {
 	var err error
 	def := Definicion{}
-
 	c := colly.NewCollector()
 	c.OnRequest(func(r *colly.Request) {
 		r.Headers.Set("user-agent", "Mozilla/5.0")
@@ -28,17 +28,19 @@ func Definir(palabra string) (Definicion, error) {
 	})
 
 	c.OnHTML("article", func(h *colly.HTMLElement) {
-		def.Palabra = h.ChildText("header")
+		def.Palabra = append(def.Palabra, h.ChildText("header"))
+		def.Etimologia = append(def.Etimologia, h.ChildText(".n2"))
+		goquerySelection := h.DOM.Find(".j, .l2")
 
-		def.Etimologia = h.ChildText(".n2")
-		goquerySelection := h.DOM.Find(".j")
+		var ac []string
 		goquerySelection.Each(func(i int, s *goquery.Selection) {
 			cad := ""
 			s.Each(func(i int, s *goquery.Selection) {
 				cad = cad + " " + s.Text()
 			})
-			def.Acepciones = append(def.Acepciones, cad)
+			ac = append(ac, cad)
 		})
+		def.Acepciones = append(def.Acepciones, ac)
 
 		var frases_hechas []string
 		var definiciones []string
@@ -71,14 +73,16 @@ func Definir(palabra string) (Definicion, error) {
 			var defs []string
 			defs = append(defs, definiciones[i])
 			def.Definiciones_secundarias = append(def.Definiciones_secundarias, Definicion{
-				Palabra:    frases_hechas[i],
-				Acepciones: defs,
+				Palabra:    []string{frases_hechas[i]},
+				Acepciones: [][]string{defs},
 			})
 		}
 	})
 
+	palabraHtml := html.EscapeString(palabra)
+
 	c.Visit("https://dle.rae.es/js/20231220.js")
-	c.Visit("https://dle.rae.es/" + palabra)
+	c.Visit("https://dle.rae.es/" + palabraHtml)
 	if len(def.Palabra) == 0 && err == nil {
 		err = errors.New("Palabra no encontrada en el Diccionario de la Lengua Española.")
 	}
@@ -87,16 +91,20 @@ func Definir(palabra string) (Definicion, error) {
 }
 
 func DefinicionMd(def Definicion) string {
-	texto := "# " + def.Palabra + "\n"
-	texto += "*" + def.Etimologia + "*\n\n"
-	for _, acepcion := range def.Acepciones {
-		texto += acepcion + "\n"
+	texto := ""
+	for i, palabra := range def.Palabra {
+		texto = texto + "# " + palabra + "\n"
+		if len(def.Etimologia) != 0 {
+			texto += "*" + def.Etimologia[i] + "*\n"
+		}
+		for _, acepcion := range def.Acepciones[i] {
+			texto += acepcion + "\n"
+		}
+		texto += "\n"
 	}
-	texto += "\n"
-
 	for _, sec := range def.Definiciones_secundarias {
-		texto += "## " + sec.Palabra + "\n"
-		texto += sec.Acepciones[0] + "\n\n"
+		texto += "## " + sec.Palabra[0] + "\n"
+		texto += sec.Acepciones[0][0] + "\n\n"
 	}
 	return texto
 }

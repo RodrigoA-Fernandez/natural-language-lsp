@@ -93,7 +93,7 @@ func handleMessage(logger *log.Logger, writer io.Writer, method string, contents
 
 		logger.Printf(string(contents))
 
-		response := state.Hover(request.ID, request.Params.TextDocument.URI, request.Params.Position)
+		response := state.Hover(request.ID, request.Params.TextDocument.URI, request.Params.Position, logger)
 
 		writeResponse(writer, response)
 

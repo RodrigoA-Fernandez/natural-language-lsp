@@ -1,5 +1,21 @@
-[natural_language_lsp]2024/05/01 22:51:37 main.go:18: Empecé y eso
-[natural_language_lsp]2024/05/01 22:51:37 main.go:39: Mensaje recibido con método: initialize
-[natural_language_lsp]2024/05/01 22:51:37 main.go:49: Connectado a: Neovim 0.9.5
-[natural_language_lsp]2024/05/01 22:51:37 main.go:56: Respuesta enviada
-[natural_language_lsp]2024/05/01 22:51:37 main.go:39: Mensaje recibido con método: initialized
+[natural_language_lsp]2024/05/03 02:57:04 main.go:18: Empecé y eso
+[natural_language_lsp]2024/05/03 02:57:04 main.go:39: Mensaje recibido con método: initialize
+[natural_language_lsp]2024/05/03 02:57:04 main.go:49: Connectado a: Neovim 0.9.5
+[natural_language_lsp]2024/05/03 02:57:04 main.go:56: Respuesta enviada
+[natural_language_lsp]2024/05/03 02:57:04 main.go:39: Mensaje recibido con método: initialized
+[natural_language_lsp]2024/05/03 02:57:04 main.go:39: Mensaje recibido con método: textDocument/didOpen
+[natural_language_lsp]2024/05/03 02:57:04 main.go:68: textDocument/didOpen: file:///home/rodrigo/Proyectos/natural_language_lsp/README.md
+[natural_language_lsp]2024/05/03 02:57:06 main.go:39: Mensaje recibido con método: textDocument/hover
+[natural_language_lsp]2024/05/03 02:57:06 main.go:94: {"id":2,"method":"textDocument\/hover","params":{"position":{"line":1,"character":5},"textDocument":{"uri":"file:\/\/\/home\/rodrigo\/Proyectos\/natural_language_lsp\/README.md"}},"jsonrpc":"2.0"}
+[natural_language_lsp]2024/05/03 02:57:06 state.go:57: {[comprobación] [Del lat. comprobatio, -ōnis.] [[ 1. f. Acción y efecto de comprobar.]] []}
+[natural_language_lsp]2024/05/03 02:57:08 main.go:39: Mensaje recibido con método: textDocument/hover
+[natural_language_lsp]2024/05/03 02:57:08 main.go:94: {"id":3,"method":"textDocument\/hover","params":{"position":{"line":0,"character":5},"textDocument":{"uri":"file:\/\/\/home\/rodrigo\/Proyectos\/natural_language_lsp\/README.md"}},"jsonrpc":"2.0"}
+[natural_language_lsp]2024/05/03 02:57:08 state.go:57: {[manejar Conjugación de manejar] [Del it. maneggiare. ] [[ 1. tr. Usar algo con las manos.  2. tr. Usar, utilizar, aunque no sea con las manos.  3. tr. Gobernar los caballos.  4. tr. Gobernar, dirigir. El agente manejó esta pretensión. El criado maneja a su amo. U. t. c. prnl. Luciano se manejó bien en este negocio.  5. tr. Am. y Guin. conducir (‖ guiar un automóvil).] []] [{[ manejárselas] [] [[ 1. loc. verb. coloq. Desenvolverse con habilidad en los asuntos diarios.]] []}]}
+[natural_language_lsp]2024/05/03 02:57:12 main.go:39: Mensaje recibido con método: textDocument/hover
+[natural_language_lsp]2024/05/03 02:57:12 main.go:94: {"id":4,"method":"textDocument\/hover","params":{"position":{"line":3,"character":80},"textDocument":{"uri":"file:\/\/\/home\/rodrigo\/Proyectos\/natural_language_lsp\/README.md"}},"jsonrpc":"2.0"}
+[natural_language_lsp]2024/05/03 02:57:12 state.go:57: {[la1 la2 la3] [  Cf. fa.] [[ V. el.] [ V. lo2.] [ 1. m. Sexta nota de la escala musical.]] []}
+[natural_language_lsp]2024/05/03 02:57:22 main.go:39: Mensaje recibido con método: textDocument/hover
+[natural_language_lsp]2024/05/03 02:57:22 main.go:94: {"id":5,"method":"textDocument\/hover","params":{"position":{"line":3,"character":76},"textDocument":{"uri":"file:\/\/\/home\/rodrigo\/Proyectos\/natural_language_lsp\/README.md"}},"jsonrpc":"2.0"}
+[natural_language_lsp]2024/05/03 02:57:22 state.go:57: {[se1 se2] [Del lat. se, acus. del pron. sui. Del ant. ge, y este del lat. illi, dat. de ille, -a, -ud 'aquel'.] [[ 1. pron. person. 3.ª pers. m., f. y n. Forma reflexiva o recíproca de los pronombres él, ella, ello, ellos, ellas en los casos dativo y acusativo. Se peinó en cinco minutos. Se compró un libro. Durante años se escribieron el uno al otro apasionadas cartas de amor.  2. pron. person. 3.ª pers. m., f. y n. U. con verbos transitivos en voz activa para indicar que la interpretación del verbo es pasiva y que el sujeto es paciente. Los papeles se distribuyeron entre los asistentes.] [ 1. pron. person. 3.ª pers. m., f. y n. le. U. en combinación con las formas del pronombre lo, la, los, las. Dáselo. Se lo dio a las maestras.]] []}
+[natural_language_lsp]2024/05/03 02:57:25 main.go:39: Mensaje recibido con método: textDocument/hover
+[natural_language_lsp]2024/05/03 02:57:25 main.go:94: {"id":6,"method":"textDocument\/hover","params":{"position":{"line":3,"character":78},"textDocument":{"uri":"file:\/\/\/home\/rodrigo\/Proyectos\/natural_language_lsp\/README.md"}},"jsonrpc":"2.0"}

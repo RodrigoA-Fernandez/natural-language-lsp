@@ -1,6 +1,7 @@
 package analisis
 
 import (
+	"log"
 	"natural_language_lsp/lsp"
 	"natural_language_lsp/scrapper"
 	"strings"
@@ -24,23 +25,23 @@ func (s *State) UpdateDocument(document, text string) {
 	s.Documents[document] = text
 }
 
-func (s *State) Hover(id int, uri string, position lsp.Position) lsp.HoverResponse {
+func (s *State) Hover(id int, uri string, position lsp.Position, logger *log.Logger) lsp.HoverResponse {
 	document := s.Documents[uri]
 	documentSlice := strings.Split(document, "\n")
-	linea := documentSlice[position.Line]
+	linea := []rune(documentSlice[position.Line])
 
 	start := position.Character
 	for start > 0 {
-		if !unicode.IsLetter(rune(linea[start])){
+		if !unicode.IsLetter(rune(linea[start])) {
 			start++
 			break
 		}
 		start--
 	}
 
-  end := position.Character
-	for end < len(linea)-1 {
-		if !unicode.IsLetter(rune(linea[end])){
+	end := position.Character
+	for end < len(linea) {
+		if !unicode.IsLetter(rune(linea[end])) {
 			break
 		}
 		end++
@@ -49,14 +50,13 @@ func (s *State) Hover(id int, uri string, position lsp.Position) lsp.HoverRespon
 	palabra := linea[start:end]
 
 	var texto string
-	definicion, err := scrapper.Definir(palabra)
+	definicion, err := scrapper.Definir(string(palabra))
 	if err != nil {
 		texto = err.Error()
 	} else {
+		logger.Println(definicion)
 		texto = scrapper.DefinicionMd(definicion)
 	}
-
-  texto += "\n" + palabra
 
 	response := lsp.HoverResponse{
 		Response: lsp.Response{
