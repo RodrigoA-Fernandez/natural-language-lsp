@@ -8,6 +8,7 @@ import (
 	// "fmt"
 	"log"
 	"natural_language_lsp/analisis"
+	grammarcheck "natural_language_lsp/grammarCheck"
 	"natural_language_lsp/lsp"
 	"natural_language_lsp/rpc"
 	"os"
@@ -42,31 +43,31 @@ func handleMessage(logger *log.Logger, writer io.Writer, method string, contents
 	case "initialize":
 		var request lsp.InitializeRequest
 		if err := json.Unmarshal(contents, &request); err != nil {
-			logger.Printf("La petición no se pudo descifrar: %s", err)
+			// logger.Printf("La petición no se pudo descifrar: %s", err)
 			return
 		}
 
-		logger.Printf("Connectado a: %s %s",
-			request.Params.ClientInfo.Name,
-			request.Params.ClientInfo.Version)
+		// logger.Printf("Connectado a: %s %s",
+		// 	request.Params.ClientInfo.Name,
+		// 	request.Params.ClientInfo.Version)
 
 		// Respuesta
 		writeResponse(writer, lsp.NewInitializeResponse(request.ID))
 
-		logger.Print("Respuesta enviada")
+		// logger.Print("Respuesta enviada")
 		break
 
 	case "textDocument/didOpen":
 		var request lsp.DidOpenTextDocumentNotification
 		if err := json.Unmarshal(contents, &request); err != nil {
-			logger.Printf("La petición no se pudo descifrar: %s", err)
+			// logger.Printf("La petición no se pudo descifrar: %s", err)
 			return
 		}
 
 		state.OpenDocument(request.Params.TextDocument.URI, request.Params.TextDocument.Text)
 
-		logger.Printf("textDocument/didOpen: %s",
-			request.Params.TextDocument.URI)
+		// logger.Printf("textDocument/didOpen: %s",
+		// 	request.Params.TextDocument.URI)
 		break
 
 	case "textDocument/didChange":
@@ -76,27 +77,44 @@ func handleMessage(logger *log.Logger, writer io.Writer, method string, contents
 			return
 		}
 
-		logger.Printf("Changed: %s",
-			request.Params.TextDocument.URI)
+		// logger.Printf("Changed: %s",
+		// 	request.Params.TextDocument.URI)
 
 		for _, change := range request.Params.ContentChanges {
 			state.UpdateDocument(request.Params.TextDocument.URI, change.Text)
+			grammarcheck.ParseDoc(change.Text, logger)
 		}
 		break
 
 	case "textDocument/hover":
 		var request lsp.HoverRequest
 		if err := json.Unmarshal(contents, &request); err != nil {
-			logger.Printf("textDocument/hover: %s", err)
+			// logger.Printf("textDocument/hover: %s", err)
 			return
 		}
 
-		logger.Printf(string(contents))
+		defaultResponse := lsp.HoverResponse{
+			Response: lsp.Response{
+				RPC: "2.0",
+				Id:  &request.ID,
+			},
+			Result: lsp.HoverResult{
+				Contents: lsp.MarkupContent{
+					Kind:  lsp.Markdown,
+					Value: "No se ha podido conseguir información sobre esta palabra.",
+				},
+			},
+		}
 
-		response := state.Hover(request.ID, request.Params.TextDocument.URI, request.Params.Position, logger)
+		// logger.Printf(string(contents))
 
+		response, err := state.Hover(request.ID, request.Params.TextDocument.URI, request.Params.Position, logger)
+		if err != nil {
+			logger.Println(err)
+			writeResponse(writer, defaultResponse)
+			return
+		}
 		writeResponse(writer, response)
-
 	}
 }
 
