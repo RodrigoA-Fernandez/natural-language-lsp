@@ -32,6 +32,7 @@ func (s *State) OpenDocument(document, text string) {
 func (s *State) UpdateDocument(document, text string) {
 	if entry, ok := s.Documents[document]; ok {
 		entry.Contenido = text
+		s.Documents[document] = entry
 	}
 }
 
@@ -91,18 +92,28 @@ func (s *State) Hover(id int, uri string, position lsp.Position, logger *log.Log
 	return response, nil
 }
 
-func (s *State) GetChangedTexts(texts []string) map[string]string {
+func (s *State) GetChangedTexts(uri string, texts []string, logger *log.Logger) []int {
+	textosCambiados := []int{}
 	nuevoMapa := map[string]string{}
-	textosCambiados := map[string]string{}
 
-	for _, v := range texts {
+	doc := s.Documents[uri]
+
+	for i, v := range texts {
 		hash := hashMD5(v)
-		_, ok := s.Documents[hash]
+
+		_, ok := doc.Textos[hash]
+		// logger.Println("Textos: ", val)
+
 		if !ok {
-			textosCambiados[hash] = v
+			textosCambiados = append(textosCambiados, i)
 		}
+
 		nuevoMapa[hash] = v
 	}
+
+	doc.Textos = nuevoMapa
+
+	s.Documents[uri] = doc
 	return textosCambiados
 }
 

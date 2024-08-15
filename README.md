@@ -9,11 +9,7 @@
 2. asdfasdf
 3. asdfasd 
 
-- asdf
-- asdf
-- asdf
-
-
 $$\sqrt{x}$$
 
 $\sum$
+

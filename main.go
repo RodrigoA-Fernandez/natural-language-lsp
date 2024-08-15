@@ -82,7 +82,7 @@ func handleMessage(logger *log.Logger, writer io.Writer, method string, contents
 
 		for _, change := range request.Params.ContentChanges {
 			state.UpdateDocument(request.Params.TextDocument.URI, change.Text)
-			grammarcheck.ParseDoc(change.Text, logger)
+			grammarcheck.ParseDoc(request.Params.TextDocument.URI, logger, state)
 		}
 		break
 

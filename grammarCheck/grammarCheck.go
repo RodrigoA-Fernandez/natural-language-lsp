@@ -2,34 +2,42 @@ package grammarcheck
 
 import (
 	"log"
+	"natural_language_lsp/analisis"
 	"strings"
 
-	"github.com/FurqanSoftware/goldmark-katex"
-	// lt "github.com/bas24/languagetool"
+	katex "github.com/FurqanSoftware/goldmark-katex"
+	lt "github.com/bas24/languagetool"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/text"
 )
 
-func ParseDoc(doc string, logger *log.Logger, textosOld []ast.Node) {
+func ParseDoc(uri string, logger *log.Logger, estado analisis.State) {
 	md := goldmark.New(goldmark.WithExtensions(&katex.Extender{}, extension.TaskList))
 	parser := md.Parser()
-	node := parser.Parse(text.NewReader([]byte(doc)))
-	// logger.Println(printTree(node, 0))
-	// text := `Texto eroneo.`
-	// result, err := lt.Check(text, "es-ES")
-	// if err != nil {
-	// 	logger.Println(err)
-	// }
+	node := parser.Parse(text.NewReader([]byte(estado.Documents[uri].Contenido)))
 
-	// logger.Println(result)
+	// text := `Texto eroneo.`
 
 	var textos []ast.Node
 	getText(&textos, node, logger)
-	for _, v := range textos {
-		logger.Println(string(v.Text([]byte(doc))))
+
+	arrayTextos := nodesToStringArray(textos, estado.Documents[uri].Contenido)
+	textosCambiados := estado.GetChangedTexts(uri, arrayTextos, logger)
+
+	for _, i := range textosCambiados {
+		result, err := lt.Check(arrayTextos[i], "es-ES")
+		if err != nil {
+			logger.Println(err)
+		}
+
+		logger.Println(result)
 	}
+
+	// for _, v := range textos {
+	// 	logger.Println(string(v.Text([]byte(doc))))
+	// }
 }
 
 func printTree(node ast.Node, indent int) string {
@@ -52,4 +60,13 @@ func getText(textos *[]ast.Node, node ast.Node, logger *log.Logger) {
 		getText(textos, hijo, logger)
 		hijo = hijo.NextSibling()
 	}
+}
+
+func nodesToStringArray(textos []ast.Node, doc string) []string {
+	arrayTextos := []string{}
+	for _, v := range textos {
+		arrayTextos = append(arrayTextos, string(v.Text([]byte(doc))))
+	}
+
+	return arrayTextos
 }
